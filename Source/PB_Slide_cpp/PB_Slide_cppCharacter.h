@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "PlayerMovementState_ENUM.h"
 #include "PB_Slide_cppCharacter.generated.h"
 
 class USpringArmComponent;
@@ -69,5 +70,44 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	//------------------------------------------------------------------------------------------------------------
+	//											MY STUFF START
+	//------------------------------------------------------------------------------------------------------------
+
+	// VARIABLES------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SprintAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* CrouchAction;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement|Constants")
+	float WalkSpeed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement|Constants")
+	float SprintSpeed;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement|Constants")
+	float CrouchSpeed;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
+	bool bIsSprintKeyDown;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
+	bool bIsCrouchKeyDown;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
+	EPlayerMovementState PlayerMovementStateENUM;
+
+	// FUNCTIONS------------------------
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void SprintKeyPressed();
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void SprintKeyReleased();
+
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void CrouchKeyPressed();
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void CrouchKeyReleased();
+	//------------------------------------------------------------------------------------------------------------
+	//											 MY STUFF END
+	//------------------------------------------------------------------------------------------------------------
 };
 

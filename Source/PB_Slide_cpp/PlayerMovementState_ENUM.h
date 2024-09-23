@@ -4,7 +4,7 @@
 #include "PlayerMovementState_ENUM.generated.h"
 
 UENUM(BlueprintType)
-enum EPlayerMovementState
+enum class EPlayerMovementState : uint8
 {
 	Walking UMETA(DisplayName = "Walking"),
 	Running UMETA(DisplayName = "Running"),
