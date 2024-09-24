@@ -66,6 +66,8 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	virtual void Tick(float DeltaTime);
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -124,6 +126,19 @@ public:
 	bool CanStand() const;
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "MovementChecks")
 	bool CanSprint() const;
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "MovementFunctions")
+	void StartCrouch();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "MovementFunctions")
+	void StopCrouch();
+
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "MovementFunctions")
+	void StartSliding();
+	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "MovementFunctions")
+	void StopSliding();
+
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void IsSlideSpeedSlowerThanCrouchSpeed();
 
 	//------------------------------------------------------------------------------------------------------------
 	//											 MY STUFF END
