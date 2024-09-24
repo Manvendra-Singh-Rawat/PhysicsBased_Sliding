@@ -60,6 +60,9 @@ APB_Slide_cppCharacter::APB_Slide_cppCharacter()
 	SprintSpeed = 1000.0f;
 	CrouchSpeed = 300.0f;
 
+	GetCapsuleComponent()->SetHiddenInGame(false);
+	StandingCapsuleHalfHeight = GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+
 	bIsSprintKeyDown = false;
 	bIsCrouchKeyDown = false;
 	//----------------------------------------------------------------------------------------------------
@@ -85,21 +88,105 @@ void APB_Slide_cppCharacter::BeginPlay()
 void APB_Slide_cppCharacter::SprintKeyPressed()
 {
 	bIsSprintKeyDown = true;
+	ResolveMovementState();
 }
 
 void APB_Slide_cppCharacter::SprintKeyReleased()
 {
 	bIsSprintKeyDown = false;
+	ResolveMovementState();
 }
 
 void APB_Slide_cppCharacter::CrouchKeyPressed()
 {
 	bIsCrouchKeyDown = true;
+	SetPlayerMovementState( (bIsSprintKeyDown) ? EPlayerMovementState::Sliding : EPlayerMovementState::Crouching);
 }
 
 void APB_Slide_cppCharacter::CrouchKeyReleased()
 {
 	bIsCrouchKeyDown = false;
+	if (PlayerMovementStateENUM != EPlayerMovementState::Sliding)
+	{
+		SetPlayerMovementState((bIsSprintKeyDown) ? EPlayerMovementState::Running : EPlayerMovementState::Walking);
+	}
+}
+
+void APB_Slide_cppCharacter::ResolveMovementState()
+{
+	EPlayerMovementState ResultState;
+
+	ResultState = (CanStand()) ? EPlayerMovementState::Walking : EPlayerMovementState::Crouching;
+	ResultState = (CanSprint()) ? EPlayerMovementState::Running : ResultState;
+
+	SetPlayerMovementState(ResultState);
+}
+
+void APB_Slide_cppCharacter::SetPlayerMovementState(EPlayerMovementState NewPlayerMovementState)
+{
+	if (PlayerMovementStateENUM == NewPlayerMovementState)
+	{
+		return;
+	}
+
+	EPlayerMovementState PrevPlayerMovementState = PlayerMovementStateENUM;
+	PlayerMovementStateENUM = NewPlayerMovementState;
+
+	OnPlayerMovementStateChange(PrevPlayerMovementState);
+}
+
+void APB_Slide_cppCharacter::OnPlayerMovementStateChange(EPlayerMovementState PrevPlayerMovementState)
+{
+	UCharacterMovementComponent* PlayerCharacterMovementComponent = GetCharacterMovement();
+
+	switch(PlayerMovementStateENUM)
+	{
+	case EPlayerMovementState::Walking:
+		PlayerCharacterMovementComponent->MaxWalkSpeed = WalkSpeed;
+		break;
+
+	case EPlayerMovementState::Running:
+		PlayerCharacterMovementComponent->MaxWalkSpeed = SprintSpeed;
+		break;
+
+	case EPlayerMovementState::Crouching:
+		PlayerCharacterMovementComponent->MaxWalkSpeed = CrouchSpeed;
+		break;
+
+		case EPlayerMovementState::Sliding:
+		PlayerCharacterMovementComponent->MaxWalkSpeed = 0.0f;
+	}
+}
+
+bool APB_Slide_cppCharacter::CanStand() const
+{
+	if (bIsCrouchKeyDown)
+	{
+		return false;
+	}
+
+	FVector CapsuleBottomPoint = GetActorLocation();
+	CapsuleBottomPoint.Z -= StandingCapsuleHalfHeight;
+	FVector CapsuleTopPoint = CapsuleBottomPoint;
+	CapsuleTopPoint.Z += 2 * StandingCapsuleHalfHeight;
+
+	DrawDebugSphere(this->GetWorld(), CapsuleBottomPoint, 8.0f, 8, FColor::Black, false, 0.0f);
+	DrawDebugSphere(this->GetWorld(), CapsuleTopPoint, 8.0f, 8, FColor::White, false, 0.0f);
+
+	FHitResult HitRes;
+	bool bDoesLineTraceHit = GetWorld()->LineTraceSingleByChannel(HitRes, CapsuleBottomPoint, CapsuleTopPoint, ECollisionChannel::ECC_Visibility);
+
+	return (bDoesLineTraceHit) ? false : true;
+}
+
+bool APB_Slide_cppCharacter::CanSprint() const
+{
+	if (!bIsSprintKeyDown)
+	{
+		return false;
+	}
+
+	return (CanStand()) ? true : false;
 }
 
 //////////////////////////////////////////////////////////////////////////

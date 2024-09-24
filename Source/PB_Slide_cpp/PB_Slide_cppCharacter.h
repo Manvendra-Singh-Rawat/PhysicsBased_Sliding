@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
 #include "PlayerMovementState_ENUM.h"
+#include "DrawDebugHelpers.h"
 #include "PB_Slide_cppCharacter.generated.h"
 
 class USpringArmComponent;
@@ -75,7 +76,7 @@ public:
 	//											MY STUFF START
 	//------------------------------------------------------------------------------------------------------------
 
-	// VARIABLES------------------------
+	// VARIABLES----------------------------------------------------------------------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* SprintAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -89,6 +90,9 @@ public:
 	float CrouchSpeed;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
+	float StandingCapsuleHalfHeight;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
 	bool bIsSprintKeyDown;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
 	bool bIsCrouchKeyDown;
@@ -96,7 +100,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Movement")
 	EPlayerMovementState PlayerMovementStateENUM;
 
-	// FUNCTIONS------------------------
+	// FUNCTIONS----------------------------------------------------------------------------------------
 	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
 	void SprintKeyPressed();
 	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
@@ -106,6 +110,21 @@ public:
 	void CrouchKeyPressed();
 	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
 	void CrouchKeyReleased();
+
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void ResolveMovementState();
+
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void SetPlayerMovementState(EPlayerMovementState NewPlayerMovementState);
+
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void OnPlayerMovementStateChange(EPlayerMovementState PrevPlayerMovementState);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "MovementChecks")
+	bool CanStand() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "MovementChecks")
+	bool CanSprint() const;
+
 	//------------------------------------------------------------------------------------------------------------
 	//											 MY STUFF END
 	//------------------------------------------------------------------------------------------------------------
