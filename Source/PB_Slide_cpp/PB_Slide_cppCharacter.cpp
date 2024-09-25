@@ -172,7 +172,6 @@ void APB_Slide_cppCharacter::SetPlayerMovementState(EPlayerMovementState NewPlay
 		StartSliding();
 		break;
 	}
-
 }
 
 void APB_Slide_cppCharacter::OnPlayerMovementStateChange(EPlayerMovementState PrevPlayerMovementState)
@@ -240,6 +239,21 @@ bool APB_Slide_cppCharacter::CanSprint() const
 	}
 
 	return (CanStand()) ? true : false;
+}
+
+void APB_Slide_cppCharacter::FloorInfluenceFunction()
+{
+	UCharacterMovementComponent* PlayerCharacterMovementComponent = GetCharacterMovement();
+	FFindFloorResult FloorResult = PlayerCharacterMovementComponent->CurrentFloor;
+	FHitResult FloorHitResult = FloorResult.HitResult;
+
+	if (FloorHitResult.ImpactNormal == GetActorUpVector())
+	{
+		return;
+	}
+
+	FVector ForceToApplyNormalized = FVector::CrossProduct(FloorHitResult.ImpactNormal, FVector::CrossProduct(FloorHitResult.ImpactNormal, GetActorUpVector()));
+	PlayerCharacterMovementComponent->AddForce(ForceToApplyNormalized * 7000000.0f);
 }
 
 void APB_Slide_cppCharacter::IsSlideSpeedSlowerThanCrouchSpeed()

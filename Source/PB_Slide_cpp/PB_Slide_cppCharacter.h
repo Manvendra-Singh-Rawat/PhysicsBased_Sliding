@@ -138,6 +138,9 @@ public:
 	void StopSliding();
 
 	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
+	void FloorInfluenceFunction();
+
+	UFUNCTION(BlueprintCallable, Category = "MovementFunctions")
 	void IsSlideSpeedSlowerThanCrouchSpeed();
 
 	//------------------------------------------------------------------------------------------------------------
